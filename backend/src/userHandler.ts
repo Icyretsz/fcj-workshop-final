@@ -103,7 +103,11 @@ async function initializeDatabase(client: Client) {
 function respond<T>(statusCode: number, payload: ApiResponse<T>) {
     return {
         statusCode,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Headers" : "Content-Type",
+            "Access-Control-Allow-Origin": "https://d3b2qa4f4hqtdb.cloudfront.net",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET, DELETE" },
         body: JSON.stringify(payload),
     };
 }

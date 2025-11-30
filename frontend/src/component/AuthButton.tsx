@@ -5,7 +5,7 @@ function AuthButton() {
 
     const signOutRedirect = () => {
         const clientId = "56msdcts0r2uahkt6c30lulbeh";
-        const logoutUri = "https://d3b2qa4f4hqtdb.cloudfront.net";
+        const logoutUri = "http://localhost:5173";
         const cognitoDomain = "https://ap-southeast-1tuutdrtld.auth.ap-southeast-1.amazoncognito.com";
         window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
     };

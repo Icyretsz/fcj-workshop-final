@@ -40,16 +40,10 @@ const request = async <T>(
         const data = await response.json();
 
         if (!response.ok) {
-            return {
-                success: false,
-                error: data?.error || `HTTP error! status: ${response.status}`,
-            };
+            return data;
         }
 
-        return {
-            success: true,
-            data,
-        };
+        return data;
     } catch (error) {
         return {
             success: false,

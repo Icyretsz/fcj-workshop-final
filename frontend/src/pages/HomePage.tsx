@@ -163,7 +163,7 @@ const HomePage: React.FC = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {users.map((u) => (
+                        {users && users.map((u) => (
                             <tr key={u.id}>
                                 <td style={{ padding: '12px', border: '1px solid #ddd' }}>{u.id}</td>
                                 <td style={{ padding: '12px', border: '1px solid #ddd' }}>{u.username}</td>
@@ -283,15 +283,6 @@ const HomePage: React.FC = () => {
                                     type="text"
                                     value={formData.role}
                                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                    style={{ width: '100%', padding: '8px', borderRadius: '3px', border: '1px solid #ddd' }}
-                                />
-                            </div>
-                            <div style={{ marginBottom: '10px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px' }}>Phone Number:</label>
-                                <input
-                                    type="text"
-                                    value={formData.phone_number}
-                                    onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                                     style={{ width: '100%', padding: '8px', borderRadius: '3px', border: '1px solid #ddd' }}
                                 />
                             </div>
