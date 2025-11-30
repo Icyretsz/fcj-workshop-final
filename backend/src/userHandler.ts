@@ -111,22 +111,42 @@ function respond<T>(statusCode: number, payload: ApiResponse<T>) {
 // ------------------------------
 // CRUD Operations
 // ------------------------------
-async function createUser(body: any) {
+async function createUser(event: any) {
     const client = await connectToRds();
     try {
-        const { cognitoSub, username, email, role, phoneNumber } = JSON.parse(body);
+        const data = JSON.parse(event.body);
 
-        const result = await client.query<User>(
-            `INSERT INTO users (cognito_sub, username, email, role, phone_number)
+        // Get authenticated user's cognito sub from token
+        const claims = event.requestContext.authorizer?.claims;
+
+        if (!claims || !claims.sub) {
+            return respond(401, {
+                success: false,
+                error: 'Authentication required'
+            });
+        }
+
+        const cognitoSub = claims.sub; // From JWT token
+        const email = claims.email; // From JWT token
+        const username = claims['cognito:username']; // From JWT token
+        const role = data.role || 'user'; // Default to 'user' role
+        const phoneNumber = claims.phone_number; // From JWT token
+
+        const user = await client.query("SELECT * FROM users WHERE cognito_sub = $1", [cognitoSub]);
+        if (user.rows.length > 0) {
+            return respond(200, { success: true, error: "User already exists" });
+        } //Check if user already exists
+
+        const result = await client.query(`INSERT INTO users (cognito_sub, username, email, role, phone_number)
        VALUES ($1, $2, $3, $4, $5)
-       RETURNING *`,
-            [cognitoSub, username, email, role, phoneNumber]
-        );
-
+       RETURNING *`, [cognitoSub, username, email, role, phoneNumber]);
         return respond(201, { success: true, data: result.rows[0] });
-    } catch (err: any) {
+    }
+    catch (err) {
+        // @ts-ignore
         return respond(400, { success: false, error: err.message });
-    } finally {
+    }
+    finally {
         await client.end();
     }
 }
@@ -209,7 +229,7 @@ export const handler = async (event: any) => {
     try {
         switch (method) {
             case "POST":
-                return createUser(event.body);
+                return createUser(event);
 
             case "GET":
                 return id ? getUser(id) : getAllUsers();
